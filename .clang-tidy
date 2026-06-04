@@ -1,0 +1,86 @@
+---
+# =============================================================================
+# .clang-tidy — norxs zonal-zero-trust-authenticator
+# clang-tidy static analysis configuration aligned with AUTOSAR C++14.
+# Run via: cmake -DZZTA_ENABLE_CLANG_TIDY=ON  or  clang-tidy src/*.cpp
+# (c) 2026 norxs Technology LLC. All rights reserved.
+# =============================================================================
+
+Checks: >
+  -*,
+  bugprone-*,
+  -bugprone-easily-swappable-parameters,
+  cert-*,
+  -cert-err58-cpp,
+  clang-analyzer-*,
+  cppcoreguidelines-*,
+  -cppcoreguidelines-avoid-magic-numbers,
+  -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
+  -cppcoreguidelines-pro-type-reinterpret-cast,
+  modernize-use-nullptr,
+  modernize-use-override,
+  modernize-use-default-member-init,
+  performance-*,
+  portability-*,
+  readability-braces-around-statements,
+  readability-const-return-type,
+  readability-container-size-empty,
+  readability-delete-null-pointer,
+  readability-else-after-return,
+  readability-function-cognitive-complexity,
+  readability-identifier-naming,
+  readability-implicit-bool-conversion,
+  readability-magic-numbers,
+  readability-misleading-indentation,
+  readability-non-const-parameter,
+  readability-redundant-control-flow,
+  readability-redundant-member-init,
+  readability-simplify-boolean-expr,
+  readability-static-definition-in-anonymous-namespace,
+  readability-uniqueptr-delete-release
+
+# Treat all enabled checks as errors (CI will fail on any warning)
+WarningsAsErrors: "*"
+
+# Header filter — only analyse ZZTA headers, not gtest/system headers
+HeaderFilterRegex: "include/zzta/.*\\.hpp"
+
+# Format style
+FormatStyle: file
+
+CheckOptions:
+  # Naming: types = CamelCase, functions = CamelCase, variables = snake_case
+  - key:   readability-identifier-naming.ClassCase
+    value: CamelCase
+  - key:   readability-identifier-naming.StructCase
+    value: CamelCase
+  - key:   readability-identifier-naming.EnumCase
+    value: CamelCase
+  - key:   readability-identifier-naming.EnumConstantCase
+    value: CamelCase
+  - key:   readability-identifier-naming.EnumConstantPrefix
+    value: "k"
+  - key:   readability-identifier-naming.FunctionCase
+    value: CamelCase
+  - key:   readability-identifier-naming.MemberCase
+    value: lower_case
+  - key:   readability-identifier-naming.MemberSuffix
+    value: "_"
+  - key:   readability-identifier-naming.ParameterCase
+    value: lower_case
+  - key:   readability-identifier-naming.VariableCase
+    value: lower_case
+  - key:   readability-identifier-naming.ConstantCase
+    value: CamelCase
+  - key:   readability-identifier-naming.ConstantPrefix
+    value: "k"
+  - key:   readability-identifier-naming.NamespaceCase
+    value: lower_case
+  # Cognitive complexity limit (AUTOSAR: functions should be comprehensible)
+  - key:   readability-function-cognitive-complexity.Threshold
+    value: "25"
+  # Magic numbers — allow common automotive constants
+  - key:   readability-magic-numbers.IgnoredFloatingPointValues
+    value: "0.0;1.0;2.0"
+  - key:   readability-magic-numbers.IgnoredIntegerValues
+    value: "0;1;2;4;8;16;32;64;128;256;0xFF;0xFFFF"

@@ -1,0 +1,146 @@
+norxs Reference Implementation License v1.0
+Copyright (c) 2026 norxs Technology LLC. All rights reserved.
+
+================================================================================
+DEFINITIONS
+================================================================================
+
+"norxs" means norxs Technology LLC, a Wyoming limited liability company.
+
+"SOFTWARE" means the zonal-zero-trust-authenticator source code, documentation,
+build scripts, CI configuration, and all associated files published under this
+license. The SOFTWARE implements a Zero-Trust SPDM authentication engine for
+Zonal ECUs over SOME/IP, including the CryptoPlatformInterface Platform
+Abstraction Layer, SpdmProtocolEngine finite state machine, and
+TokenLifecycleManager session governance engine.
+
+"REFERENCE IMPLEMENTATION" means a functional, standards-compliant demonstration
+of norxs engineering capability intended for evaluation, education, and
+competitive differentiation purposes only.
+
+"COMMERCIAL USE" means any use of the SOFTWARE, or a substantial portion thereof,
+in a product, service, or system that is sold, licensed, leased, or otherwise
+transferred to a third party for commercial gain, including integration into
+automotive ECUs, gateways, controllers, or software platforms deployed in
+production vehicles or vehicle development programs.
+
+"DERIVATIVE WORK" means any work that incorporates, modifies, translates, adapts,
+or is otherwise based upon the SOFTWARE or any portion thereof.
+
+================================================================================
+GRANT OF RIGHTS
+================================================================================
+
+Subject to the terms and conditions of this License, norxs hereby grants you a
+worldwide, royalty-free, non-exclusive, non-transferable, revocable license to:
+
+  1. Download, copy, and read the SOFTWARE for evaluation and educational
+     purposes only.
+
+  2. Compile and execute the SOFTWARE on your own development hardware or
+     virtual machines for the sole purpose of evaluating norxs engineering
+     methodology and technical capabilities.
+
+  3. Reference the SOFTWARE architecture, design patterns, and documentation
+     in internal technical discussions, academic research, and standards body
+     contributions, provided that norxs Technology LLC is cited as the source.
+
+================================================================================
+RESTRICTIONS
+================================================================================
+
+You MAY NOT, without a separate written Commercial License Agreement signed by an
+authorized representative of norxs Technology LLC:
+
+  1. Use the SOFTWARE or any DERIVATIVE WORK in any COMMERCIAL USE.
+
+  2. Sublicense, sell, rent, lease, transfer, assign, or otherwise dispose of
+     the SOFTWARE or any rights granted hereunder.
+
+  3. Remove, alter, or obscure any copyright, trademark, or attribution notice
+     contained in the SOFTWARE.
+
+  4. Represent the SOFTWARE as your own work or claim authorship of any portion
+     of the SOFTWARE.
+
+  5. Use the SOFTWARE in any product intended for safety-critical applications
+     (including but not limited to automotive, aerospace, medical, or industrial
+     control systems) without obtaining the full production source rights and
+     accompanying ISO 26262 safety evidence package from norxs.
+
+  6. Reverse-engineer, decompile, or disassemble any compiled form of the
+     SOFTWARE (this restriction does not apply to the open-source reference
+     implementation source files themselves).
+
+================================================================================
+INTELLECTUAL PROPERTY
+================================================================================
+
+All right, title, and interest in and to the SOFTWARE, including all
+intellectual property rights therein, remain exclusively with norxs Technology
+LLC. This License does not grant you any rights in the norxs name, logo,
+trademarks, or trade dress.
+
+The SOFTWARE incorporates techniques and design patterns developed by norxs
+over multiple years of AUTOSAR, ISO 26262, and UN R155 program engagement.
+These techniques are proprietary to norxs regardless of whether they are
+individually patentable.
+
+================================================================================
+COMMERCIAL LICENSING AND PROFESSIONAL SERVICES
+================================================================================
+
+norxs Technology LLC offers commercial licensing and professional services for
+organizations that wish to deploy this technology in production programs:
+
+  - Full production source rights with unrestricted commercial use
+  - ISO 26262 ASIL-D safety evidence package (FMEA, FTA, DFA, HARA)
+  - UN R155 / ISO/SAE 21434 cybersecurity artifact package (TARA, VSOC)
+  - ASPICE CL3 process documentation and review support
+  - NXP HSE firmware integration and HSM key provisioning
+  - Long-term engineering support, maintenance, and SLA agreements
+  - Custom extension modules (TrustZone-M, Arm CryptoCell, EVITA HSM)
+
+To obtain a commercial license or discuss professional services, contact:
+
+  norxs Technology LLC
+  https://norxs.com
+  contact@norxs.com
+
+================================================================================
+DISCLAIMER OF WARRANTIES
+================================================================================
+
+THE SOFTWARE IS PROVIDED "AS IS" AND AS A REFERENCE IMPLEMENTATION ONLY.
+NORXS TECHNOLOGY LLC MAKES NO WARRANTIES, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE,
+ACCURACY, COMPLETENESS, OR NON-INFRINGEMENT.
+
+THE SOFTWARE HAS NOT BEEN CERTIFIED FOR USE IN SAFETY-CRITICAL SYSTEMS. IT DOES
+NOT CONSTITUTE A SAFETY ELEMENT OUT OF CONTEXT (SEooC) UNDER ISO 26262 WITHOUT
+THE ACCOMPANYING SAFETY EVIDENCE PACKAGE AVAILABLE UNDER A COMMERCIAL LICENSE.
+
+================================================================================
+LIMITATION OF LIABILITY
+================================================================================
+
+IN NO EVENT SHALL NORXS TECHNOLOGY LLC BE LIABLE FOR ANY DIRECT, INDIRECT,
+INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING BUT NOT
+LIMITED TO LOSS OF PROFITS, DATA, BUSINESS, OR GOODWILL) ARISING OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THIS LICENSE, EVEN IF ADVISED OF THE POSSIBILITY
+OF SUCH DAMAGES.
+
+================================================================================
+GOVERNING LAW
+================================================================================
+
+This License shall be governed by and construed in accordance with the laws of
+the State of Wyoming, United States of America, without regard to its conflict-
+of-law provisions. Any dispute arising under this License shall be subject to
+the exclusive jurisdiction of the state and federal courts located in Sheridan
+County, Wyoming.
+
+================================================================================
+
+norxs Technology LLC — Safety Engineering, Built from the Ground Up.
+(c) 2026 norxs Technology LLC. All rights reserved.
