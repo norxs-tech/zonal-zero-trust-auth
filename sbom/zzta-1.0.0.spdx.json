@@ -1,0 +1,76 @@
+{
+  "spdxVersion": "SPDX-2.3",
+  "dataLicense": "CC0-1.0",
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "name": "zonal-zero-trust-authenticator-1.0.0",
+  "documentNamespace": "https://norxs.com/spdx/zonal-zero-trust-authenticator-1.0.0-8e6a3ac0-9c6d-4089-a38e-759f3158cc42",
+  "creationInfo": {
+    "created": "2026-06-11T00:00:00Z",
+    "creators": [
+      "Organization: norxs Technology LLC",
+      "Tool: manual-curation-1.0"
+    ],
+    "licenseListVersion": "3.23"
+  },
+  "comment": "Software Bill of Materials for the norxs zonal-zero-trust-authenticator reference implementation. Maintained as an OpenChain ISO/IEC 5230 conformance artifact. The production library (zzta_core) has ZERO third-party dependencies; GoogleTest is a build-time test dependency only and is never linked into zzta_core.",
+  "hasExtractedLicensingInfos": [
+    {
+      "licenseId": "LicenseRef-norxs-RI-1.0",
+      "name": "norxs Reference Implementation License v1.0",
+      "extractedText": "See the LICENSE file at the repository root for the full license text. Summary: source-available reference implementation for evaluation, education, and competitive differentiation; commercial use requires a separate license agreement with norxs Technology LLC.",
+      "seeAlsos": [
+        "https://github.com/norxs-tech/zonal-zero-trust-authenticator/blob/main/LICENSE"
+      ]
+    }
+  ],
+  "packages": [
+    {
+      "name": "zzta_core",
+      "SPDXID": "SPDXRef-Package-zzta-core",
+      "versionInfo": "1.0.0",
+      "supplier": "Organization: norxs Technology LLC",
+      "originator": "Organization: norxs Technology LLC",
+      "downloadLocation": "git+https://github.com/norxs-tech/zonal-zero-trust-authenticator.git",
+      "filesAnalyzed": false,
+      "homepage": "https://norxs.com",
+      "licenseConcluded": "LicenseRef-norxs-RI-1.0",
+      "licenseDeclared": "LicenseRef-norxs-RI-1.0",
+      "copyrightText": "(c) 2026 norxs Technology LLC. All rights reserved.",
+      "summary": "Zero-Trust SPDM authentication engine for Zonal ECUs over SOME/IP. Zero-heap, zero-exception AUTOSAR C++14 static library.",
+      "primaryPackagePurpose": "LIBRARY",
+      "externalRefs": [
+        {
+          "referenceCategory": "SECURITY",
+          "referenceType": "cpe23Type",
+          "referenceLocator": "cpe:2.3:a:norxs:zonal-zero-trust-authenticator:1.0.0:*:*:*:*:*:*:*"
+        }
+      ]
+    },
+    {
+      "name": "googletest",
+      "SPDXID": "SPDXRef-Package-googletest",
+      "versionInfo": "1.14.0",
+      "supplier": "Organization: Google LLC",
+      "downloadLocation": "git+https://github.com/google/googletest.git@f8d7d77c06936315286eb55f8de22cd23c188571",
+      "filesAnalyzed": false,
+      "homepage": "https://github.com/google/googletest",
+      "licenseConcluded": "BSD-3-Clause",
+      "licenseDeclared": "BSD-3-Clause",
+      "copyrightText": "Copyright 2008, Google Inc. All rights reserved.",
+      "summary": "C++ test framework. Build-time TEST dependency only; fetched via CMake FetchContent (commit-hash pinned) when ZZTA_BUILD_TESTS=ON. Not redistributed in this repository and never linked into zzta_core.",
+      "primaryPackagePurpose": "FRAMEWORK"
+    }
+  ],
+  "relationships": [
+    {
+      "spdxElementId": "SPDXRef-DOCUMENT",
+      "relationshipType": "DESCRIBES",
+      "relatedSpdxElement": "SPDXRef-Package-zzta-core"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-googletest",
+      "relationshipType": "TEST_DEPENDENCY_OF",
+      "relatedSpdxElement": "SPDXRef-Package-zzta-core"
+    }
+  ]
+}

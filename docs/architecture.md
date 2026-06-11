@@ -16,6 +16,7 @@
    - 5.2 [SpdmProtocolEngine (FSM)](#52-spdmprotocolengine-fsm)
    - 5.3 [TokenLifecycleManager (TLM)](#53-tokenlifecyclemanager-tlm)
    - 5.4 [StaticCircularBuffer (LRU)](#54-staticcircularbuffer-lru)
+   - 5.5 [SomeIpAdaptor (Transport Integration Layer)](#55-someipadaptor-transport-integration-layer)
 6. [SPDM Handshake — Full Protocol Flow](#6-spdm-handshake--full-protocol-flow)
 7. [Cryptographic Design](#7-cryptographic-design)
 8. [Memory Architecture](#8-memory-architecture)
@@ -351,6 +352,32 @@ public:
 
 `Push` / `Pop` are O(1). `Remove` is O(N) — called only on explicit revocation, not
 on the periodic expiry hot path.
+
+### 5.5 SomeIpAdaptor (Transport Integration Layer)
+
+**File:** `include/zzta/SomeIpAdaptor.hpp` / `src/SomeIpAdaptor.cpp`
+**Traceability:** ISO/SAE 21434, UN R155, AUTOSAR SWS_SD / SWS_SomeIpTp
+
+The `SomeIpAdaptor` bridges the authentication core to a concrete SOME/IP
+service-discovery and transport backend (vsomeip, AUTOSAR ComM/SoAd, or NXP
+S32G LLCE). It owns a pool of up to `kMaxZoneSlots` `SpdmProtocolEngine`
+instances plus one shared `TokenLifecycleManager`, and exposes four
+integration hooks that the host SOME/IP stack invokes on SD lifecycle events:
+
+| Hook | Trigger | Behaviour |
+|------|---------|-----------|
+| `OnPeerOffered()` | New service advertisement (SD OfferService) | Allocates / resets an engine slot for the peer; rejects all-zero IDs; a re-offer resets the existing slot (forces re-authentication) |
+| `OnAuthRequest()` | Incoming SPDM frame type `0x01` | Frame length / payload / version validation, then dispatch to the slot's `ProcessAuthRequest()`; transmits the nonce challenge via the registered transmit callback |
+| `OnAuthResponse()` | Incoming SPDM frame type `0x02` | Validation, signature verification via `ProcessAuthResponse()`, token registration on success |
+| `OnSessionTick()` | Periodic timer (≤ 15 s) | Drives `EvaluateTokenExpiry()` — the UN R155 CS.14 continuous-monitoring entry point |
+
+The adaptor enforces the complete Zero-Trust policy: **no SOME/IP application
+frame is forwarded until `IsSessionActive()` reports an authenticated, live
+token** for the peer. Like every other module it is zero-heap and
+zero-exception; all frame parsing is bounds-checked against statically sized
+buffers, and malformed frames (short frame, null payload, unknown peer, wrong
+protocol version) are rejected with distinct status codes — each path covered
+by a dedicated test case in `SomeIpAdaptorTest` (17 cases).
 
 ---
 

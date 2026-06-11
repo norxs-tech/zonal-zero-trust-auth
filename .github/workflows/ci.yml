@@ -229,6 +229,32 @@ jobs:
           fi
           echo ""; echo "All checks PASSED. AUTOSAR C++14 compliant."
 
+      - name: Validate SBOM (SPDX 2.3 JSON — ISO/IEC 5230 §3.2.1)
+        run: |
+          python3 - <<'PYEOF'
+          import json, sys
+          doc = json.load(open("sbom/zzta-1.0.0.spdx.json"))
+          assert doc["spdxVersion"] == "SPDX-2.3", "wrong SPDX version"
+          assert doc["SPDXID"] == "SPDXRef-DOCUMENT"
+          names = {p["name"] for p in doc["packages"]}
+          assert "zzta_core" in names and "googletest" in names, "missing packages"
+          rels = {(r["spdxElementId"], r["relationshipType"]) for r in doc["relationships"]}
+          assert ("SPDXRef-Package-googletest", "TEST_DEPENDENCY_OF") in rels, \
+              "googletest must be declared TEST_DEPENDENCY_OF only"
+          print("SBOM valid: SPDX 2.3, packages and relationships OK.")
+          PYEOF
+
+      - name: Verify dependency pins are commit hashes (ISO/IEC 18974 §3.3)
+        run: |
+          # Every FetchContent GIT_TAG must be a 40-char commit hash, not a tag.
+          BAD=$(grep -E "^\s*GIT_TAG" CMakeLists.txt | grep -vE "GIT_TAG\s+[0-9a-f]{40}" | wc -l)
+          if [ "$BAD" -gt 0 ]; then
+            echo "SUPPLY CHAIN FAILURE: GIT_TAG entries not pinned by commit hash:"
+            grep -nE "^\s*GIT_TAG" CMakeLists.txt | grep -vE "[0-9a-f]{40}"
+            exit 1
+          fi
+          echo "All FetchContent dependencies pinned by immutable commit hash."
+
   # ─────────────────────────────────────────────────────────────────────────
   # Job 5 — Doxygen Header Compliance
   # ─────────────────────────────────────────────────────────────────────────

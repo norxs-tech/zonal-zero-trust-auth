@@ -122,7 +122,11 @@ if(ZZTA_BUILD_TESTS AND NOT CMAKE_CROSSCOMPILING)
     FetchContent_Declare(
         googletest
         GIT_REPOSITORY https://github.com/google/googletest.git
-        GIT_TAG        v1.14.0
+        # Pinned by COMMIT HASH, not tag (ISO/IEC 18974 §3.3 / NIST CSF ID.SC):
+        # tags are mutable references and can be force-moved; a commit hash is
+        # content-addressed and immutable. This hash corresponds to release
+        # v1.14.0. Update the SBOM (sbom/) whenever this pin changes.
+        GIT_TAG        f8d7d77c06936315286eb55f8de22cd23c188571  # v1.14.0
     )
     set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
     set(BUILD_GMOCK             OFF CACHE BOOL "" FORCE)

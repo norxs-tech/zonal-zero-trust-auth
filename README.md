@@ -9,6 +9,9 @@
 [![Safety](https://img.shields.io/badge/safety-ISO%2026262%20ASIL--D-red)]()
 [![AUTOSAR](https://img.shields.io/badge/AUTOSAR-C%2B%2B14-orange)]()
 [![UN R155](https://img.shields.io/badge/UN%20R155-Compliant-brightgreen)]()
+[![OpenChain](https://img.shields.io/badge/OpenChain-ISO%2FIEC%205230%20%C2%B7%2018974-blue)](docs/COMPLIANCE.md)
+[![NIST CSF](https://img.shields.io/badge/NIST%20CSF-Aligned-blueviolet)](docs/COMPLIANCE.md)
+[![SBOM](https://img.shields.io/badge/SBOM-SPDX%202.3-informational)](sbom/zzta-1.0.0.spdx.json)
 
 ---
 
@@ -97,6 +100,8 @@ Zone Node Peers (Cortex-M7 Zone Controllers)
 | **SpdmProtocolEngine** | `SpdmProtocolEngine.hpp/.cpp` | SPDM v1.1 challenge-response FSM; 4-state zero-alloc state machine | DMTF DSP0274, ISO/SAE 21434 §10.4.2 |
 | **TokenLifecycleManager** | `TokenLifecycleManager.hpp/.cpp` | Session token table, LRU eviction, periodic expiry, brute-force lockout | UN R155 §7.2.2, ISO/SAE 21434 §10.4.3 |
 | **StaticCircularBuffer** | `TokenLifecycleManager.hpp` | Zero-alloc SPSC ring buffer for slot LRU ordering | AUTOSAR C++14 |
+| **SomeIpAdaptor** | `SomeIpAdaptor.hpp/.cpp` | SOME/IP SD lifecycle integration: peer offer, SPDM frame dispatch, session tick; Zero-Trust frame gating | AUTOSAR SWS_SD / SWS_SomeIpTp, UN R155 CS.14 |
+| **ZztaVersion** | `ZztaVersion.hpp` | AUTOSAR-style SW version constants, packed version word, BSW compatibility check | AUTOSAR SWS_BSWGeneral §7.3 |
 
 ---
 
@@ -196,6 +201,53 @@ RevokeToken(client_id, is_anomaly=true):
 | CS.15 — Cryptographic agility | ✅ | PAL interface — swap provider without changing FSM |
 | CS.16 — Key material erasure | ✅ | `ZeroSlotSecrets()` volatile loop on all revocation paths |
 
+### Supply Chain & Open Source Compliance — OpenChain ISO/IEC 5230 · 18974 · NIST CSF
+
+Full requirement-by-requirement mapping in [`docs/COMPLIANCE.md`](docs/COMPLIANCE.md) (ZZTA-CMP-001).
+
+| Artifact | Standard | Location |
+|----------|----------|----------|
+| SPDX 2.3 Software Bill of Materials | ISO/IEC 5230 §3.2.1 | [`sbom/zzta-1.0.0.spdx.json`](sbom/zzta-1.0.0.spdx.json) |
+| Third-party component inventory + FOSS contact | ISO/IEC 5230 §3.3.1 / §3.1.4 | [`NOTICE`](NOTICE) |
+| Vulnerability disclosure policy & response SLAs | ISO/IEC 18974 §3.1.4 | [`SECURITY.md`](SECURITY.md) |
+| Commit-hash-pinned dependencies | ISO/IEC 18974 §3.3 / NIST CSF ID.SC | `CMakeLists.txt` (GoogleTest pin) |
+| NIST CSF function mapping (Identify→Recover) | NIST CSF | [`docs/COMPLIANCE.md`](docs/COMPLIANCE.md) §4 |
+
+The production library `zzta_core` has **zero third-party dependencies** — the
+license-obligation and known-vulnerability surface is empty by construction.
+GoogleTest is a build-time test dependency only, pinned by immutable commit hash.
+
+---
+
+## Verification Evidence
+
+Full results in [`docs/TEST_REPORT.md`](docs/TEST_REPORT.md) (ZZTA-VTR-001);
+threat-to-test mapping in [`docs/TRACEABILITY.md`](docs/TRACEABILITY.md) (ZZTA-RTM-001).
+
+| Verification Activity | Result |
+|----------------------|--------|
+| Unit + integration tests (GoogleTest, ASan + UBSan) | **81 / 81 PASSED** — 7 suites |
+| Line coverage (gcovr, production sources only) | **95.2 %** (gate ≥ 90 %) |
+| Branch coverage | **88.8 %** (gate ≥ 85 %) |
+| Function coverage | **96.7 %** |
+| AUTOSAR forbidden-pattern scan | **0 violations** |
+| cppcheck (`--enable=all`, `--error-exitcode=1`) | **PASS** (3 documented FP suppressions) |
+| Doxygen header compliance | **PASS** — all files |
+| Cross-compile: Cortex-A53 + Cortex-M7 | **PASS** |
+| Cortex-M7 stack budget (≤ 1024 B / function) | **PASS** |
+
+Test suite breakdown:
+
+| Suite | Cases | Focus |
+|-------|------:|-------|
+| `SoftwareCryptoProviderTest` | 16 | SHA-256 FIPS 180-4 KATs, nonce quality, HKDF key separation |
+| `SpdmProtocolEngineTest` | 17 | FSM transition matrix, version gate, signature paths, re-auth |
+| `TokenLifecycleManagerTest` | 20 | Token CRUD, expiry, lockout, LRU eviction, ring buffer |
+| `SomeIpAdaptorTest` | 17 | SD hooks, malformed-frame rejection, Zero-Trust gating |
+| `FaultInjectionTest` | 4 | PAL fault propagation, key zeroization after revoke |
+| `ZztaVersionTest` | 3 | Version constants and packed word layout |
+| `IntegrationTest` | 4 | Multi-session, key uniqueness, full handshake→expire→re-auth cycle |
+
 ---
 
 ## Build Instructions
@@ -244,8 +296,13 @@ cmake --build build-m7 --target zzta_core
 ### AUTOSAR Compliance Scan
 
 ```bash
-cmake --build build --target compliance
+./scripts/autosar_scan.sh
 ```
+
+The same scan runs as a gating CI job (Job 4). The former
+`cmake --build . --target compliance` custom target was removed because its
+inline shell substitutions broke the Ninja generator; the standalone script
+above is the local runner of record.
 
 ---
 
@@ -256,24 +313,40 @@ zonal-zero-trust-authenticator/
 ├── include/zzta/
 │   ├── CryptoPlatformInterface.hpp    PAL interface + SoftwareCryptoProvider
 │   ├── SpdmProtocolEngine.hpp         SPDM FSM + frame DTOs
-│   └── TokenLifecycleManager.hpp      Session table + StaticCircularBuffer
+│   ├── TokenLifecycleManager.hpp      Session table + StaticCircularBuffer
+│   ├── SomeIpAdaptor.hpp              SOME/IP SD lifecycle integration hooks
+│   └── ZztaVersion.hpp                AUTOSAR-style version constants
 ├── src/
 │   ├── CryptoPlatformInterface.cpp    SHA-256, LFSR, HKDF, mock ECC
 │   ├── SpdmProtocolEngine.cpp         FSM transitions, secret sanitisation
-│   └── TokenLifecycleManager.cpp      Token CRUD, expiry scan, lockout
+│   ├── TokenLifecycleManager.cpp      Token CRUD, expiry scan, lockout
+│   └── SomeIpAdaptor.cpp              Frame validation, slot pool, Zero-Trust gating
 ├── tests/
-│   └── test_zzta_core.cpp             32-case GoogleTest suite (all modules)
+│   └── test_zzta_core.cpp             81-case GoogleTest suite (7 suites, all modules)
 ├── docs/
-│   └── architecture.md                Deep-dive: threat model, data flows
+│   ├── architecture.md                Deep-dive: threat model, data flows
+│   ├── TARA.md                        ISO/SAE 21434 §15 threat analysis (ZZTA-TARA-001)
+│   ├── HARA_zonal_zero_trust.md       ISO 26262-3 hazard analysis (ZZTA-HARA-001)
+│   ├── TEST_REPORT.md                 Verification & test report (ZZTA-VTR-001)
+│   ├── TRACEABILITY.md                Threat → code → test matrix (ZZTA-RTM-001)
+│   └── COMPLIANCE.md                  ISO/IEC 5230 · 18974 · NIST CSF mapping (ZZTA-CMP-001)
 ├── cmake/
 │   ├── Toolchain-A53.cmake            AArch64 cross-compile (QNX / Linux)
-│   └── Toolchain-M7.cmake             ARM Cortex-M7 bare-metal
+│   ├── Toolchain-M7.cmake             ARM Cortex-M7 bare-metal
+│   └── zzta-config.cmake              CMake package config for find_package(zzta)
+├── sbom/
+│   └── zzta-1.0.0.spdx.json           SPDX 2.3 Software Bill of Materials
+├── scripts/
+│   └── autosar_scan.sh                Local AUTOSAR forbidden-pattern scan
 ├── .github/
-│   ├── workflows/ci.yml               5-job CI pipeline
+│   ├── workflows/ci.yml               7-job CI pipeline
 │   ├── ISSUE_TEMPLATE/bug_report.md
 │   └── PULL_REQUEST_TEMPLATE.md
+├── .clang-tidy                        AUTOSAR-aligned clang-tidy check set
 ├── CMakeLists.txt
 ├── LICENSE
+├── NOTICE                             Third-party inventory + OSS compliance contact
+├── SECURITY.md                        Vulnerability disclosure (ISO/IEC 18974-aligned)
 ├── CHANGELOG.md
 ├── CONTRIBUTING.md
 └── README.md
@@ -302,7 +375,7 @@ Commercial use requires a separate license agreement.
 
 ## Standards
 
-AUTOSAR C++14 · ISO/SAE 21434 · UN R155 · ISO 26262 ASIL-D · DMTF DSP0274 v1.1 · RFC 5869 · FIPS PUB 180-4
+AUTOSAR C++14 · ISO/SAE 21434 · UN R155 · ISO 26262 ASIL-D · DMTF DSP0274 v1.1 · RFC 5869 · FIPS PUB 180-4 · OpenChain ISO/IEC 5230 · ISO/IEC 18974 · NIST CSF · SPDX (ISO/IEC 5962)
 
 ---
 

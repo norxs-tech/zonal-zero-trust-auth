@@ -391,6 +391,11 @@ CryptoStatus SoftwareCryptoProvider::DeriveSessionKey(
         constexpr std::size_t ikm_len{kNonceLen + kClientIdLen};
         std::array<uint8_t, 64U + ikm_len> inner_input{};
         std::memcpy(&inner_input[0],         ipad_block.data(),   64U);
+        // cppcheck-suppress containerOutOfBounds
+        // Justification: false positive. inner_input is std::array<uint8_t,
+        // 64U + ikm_len> (size 104), so index 64 is in-bounds. cppcheck's
+        // ValueFlow evaluates a hypothetical size of 64 ("if size is 64")
+        // that cannot occur because ikm_len is a non-zero constexpr.
         std::memcpy(&inner_input[64U],        session_nonce.data(), kNonceLen);
         std::memcpy(&inner_input[64U + kNonceLen], client_id.data(), kClientIdLen);
 
@@ -400,6 +405,9 @@ CryptoStatus SoftwareCryptoProvider::DeriveSessionKey(
         // PRK = SHA-256(K_opad ∥ inner_hash)
         std::array<uint8_t, 64U + kSha256DigestLen> outer_input{};
         std::memcpy(&outer_input[0],  opad_block.data(), 64U);
+        // cppcheck-suppress containerOutOfBounds
+        // Justification: false positive — outer_input has size 64U +
+        // kSha256DigestLen (96), so index 64 is in-bounds.
         std::memcpy(&outer_input[64U], inner_hash.data(), kSha256DigestLen);
 
         Sha256Impl(outer_input.data(), outer_input.size(), prk);
@@ -432,6 +440,9 @@ CryptoStatus SoftwareCryptoProvider::DeriveSessionKey(
     // T(1) outer: opad ∥ t1_inner
     std::array<uint8_t, 64U + kSha256DigestLen> expand_outer{};
     std::memcpy(&expand_outer[0],  prk_opad.data(), 64U);
+    // cppcheck-suppress containerOutOfBounds
+    // Justification: false positive — expand_outer has size 64U +
+    // kSha256DigestLen (96), so index 64 is in-bounds.
     std::memcpy(&expand_outer[64U], t1_inner.data(), kSha256DigestLen);
 
     Sha256Digest okm{};

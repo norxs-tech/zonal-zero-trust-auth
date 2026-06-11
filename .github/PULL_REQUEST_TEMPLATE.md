@@ -12,6 +12,8 @@ Closes #
 - [ ] SpdmProtocolEngine
 - [ ] TokenLifecycleManager
 - [ ] StaticCircularBuffer
+- [ ] SomeIpAdaptor
+- [ ] ZztaVersion
 - [ ] CMake / Build System
 - [ ] CI / GitHub Actions
 - [ ] Documentation only
@@ -35,6 +37,13 @@ Closes #
 - [ ] Anomaly counter incremented on all rejection paths in SpdmProtocolEngine
 - [ ] ISO/SAE 21434 TARA impact assessed for any new interface or data path
 
+## Supply Chain / OSS Compliance Checklist (ISO/IEC 5230 · 18974)
+
+- [ ] No new third-party code vendored into the repository
+- [ ] Any dependency version bump is pinned by **commit hash** (not tag) and reviewed for known vulnerabilities
+- [ ] `sbom/zzta-*.spdx.json` and `NOTICE` updated if any dependency or license changed
+- [ ] `docs/TRACEABILITY.md` updated if threats, requirements, or test mappings changed
+
 ## Testing
 
 ```
@@ -44,7 +53,7 @@ cmake --build build --target zzta_tests
 ctest --test-dir build --output-on-failure
 
 # Compliance scan
-cmake --build build --target compliance
+./scripts/autosar_scan.sh
 ```
 
 Paste `ctest` output here:

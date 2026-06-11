@@ -1,0 +1,60 @@
+NOTICE — zonal-zero-trust-authenticator
+norxs Technology LLC | (c) 2026 | https://norxs.com
+
+================================================================================
+LICENSE OF THIS REPOSITORY
+================================================================================
+
+All source code, documentation, build scripts, and CI configuration in this
+repository are licensed under the norxs Reference Implementation License v1.0
+(see LICENSE). SPDX identifier used throughout this repository:
+
+    LicenseRef-norxs-RI-1.0
+
+================================================================================
+THIRD-PARTY COMPONENTS
+================================================================================
+
+This repository REDISTRIBUTES NO third-party source code. The repository
+contains only norxs-authored files.
+
+One third-party component is fetched AT BUILD TIME, for the host test build
+only, and is never linked into the production library (zzta_core):
+
+--------------------------------------------------------------------------------
+Component : GoogleTest (googletest)
+Version   : v1.14.0 (pinned by commit hash in CMakeLists.txt)
+Origin    : https://github.com/google/googletest
+License   : BSD-3-Clause
+Copyright : Copyright 2008, Google Inc. All rights reserved.
+Usage     : Test framework for the zzta_tests executable. Fetched via CMake
+            FetchContent only when ZZTA_BUILD_TESTS=ON and not cross-compiling.
+            TEST DEPENDENCY ONLY — no GoogleTest code is compiled into, linked
+            against, or distributed with the zzta_core production library.
+--------------------------------------------------------------------------------
+
+Build-environment toolchains (GCC, Clang, arm-none-eabi-gcc, newlib, CMake,
+Ninja, cppcheck, clang-tidy, gcovr) are used as tools and are neither modified
+nor redistributed by this repository.
+
+================================================================================
+MACHINE-READABLE INVENTORY
+================================================================================
+
+A complete SPDX 2.3 Software Bill of Materials is maintained at:
+
+    sbom/zzta-1.0.0.spdx.json
+
+================================================================================
+OPEN SOURCE COMPLIANCE CONTACT (OpenChain ISO/IEC 5230 §3.1.4)
+================================================================================
+
+License inquiries, component requests, and FOSS compliance questions:
+
+    Email : contact@norxs.com
+    Subject line: [OSS-COMPLIANCE] zonal-zero-trust-authenticator
+    Web   : https://www.norxs.com/
+
+norxs Technology LLC operates an open source program conformant with
+OpenChain ISO/IEC 5230 (license compliance) and ISO/IEC 18974 (security
+assurance). See docs/COMPLIANCE.md for the per-repository conformance mapping.
